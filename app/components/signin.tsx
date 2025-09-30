@@ -12,11 +12,8 @@ export default function SignIn() {
       password,
     },
     {
-      onRequest: (ctx) => {
-
-      },
       onSuccess: (ctx) => {
-        console.log("success!!")
+        console.log("success!!: ", ctx.data)
       },
       onError: (ctx) => {
         console.log(ctx.error)

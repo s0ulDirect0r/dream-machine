@@ -1,6 +1,7 @@
 import { openai } from '@ai-sdk/openai'
 import { streamText, type UIMessage, convertToModelMessages } from 'ai'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
+import { auth } from '~/lib/auth.server'
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30
@@ -10,6 +11,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
+  const session = await auth.api.getSession({ headers: request.headers })
+  if (!session?.user) {
+    throw Error("not a valid user session")
+  }
   const { messages }: { messages: UIMessage[] } = await request.json()
   const result = streamText({
     model: openai('gpt-4o'),

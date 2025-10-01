@@ -2,9 +2,20 @@ import { useChat } from '@ai-sdk/react'
 import { useState } from 'react'
 import type { Route } from './+types/chat'
 import { DefaultChatTransport } from 'ai'
-import { Form } from 'react-router'
+import { Form, redirect, useNavigate, type LoaderFunctionArgs } from 'react-router'
 import { Button } from '~/components/ui/button'
 import { ScrollArea } from '~/components/ui/scroll-area'
+import { auth } from '~/lib/auth.server'
+import { authClient } from '~/lib/auth-client'
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await auth.api.getSession({ headers: request.headers })
+  if (session?.user) {
+    return { user: session.user }
+  } else {
+    throw redirect("/")
+  }
+}
 
 
 export default function Chat() {
@@ -12,6 +23,14 @@ export default function Chat() {
   const { messages, sendMessage } = useChat({ transport: new DefaultChatTransport({
     api: '/api/ai'
   })})
+
+  const navigator = useNavigate()
+
+  const signOut = async () => {
+    await authClient.signOut()
+    console.log('signing out!')
+    navigator('/')
+  }
 
   return (
     <div className='flex flex-col justify-center m-6 gap-8'>
@@ -53,6 +72,7 @@ export default function Chat() {
           <Button className='bg-blue-400 self-center'>Chat!</Button>
         </Form>
       </div>
+      <Button onClick={signOut} className="bg-blue-600 max-w-md text-white self-center border-blue-600">Sign Out</Button>
     </div>
     
   )

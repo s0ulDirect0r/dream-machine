@@ -27,8 +27,9 @@ export default function Protected({ loaderData }: Route.ComponentProps) {
   }
 
   return (
-    <div className="text-white">
-      Hello, {JSON.stringify(loaderData.user.email)}
+    <div className="text-white flex flex-col">
+      <h1 className='text-white font-[Faculty_Glyphic] font-extrabold my-9 text-center text-5xl md:text-6xl'>CLEARCHAT</h1>
+      <p>Hello, {JSON.stringify(loaderData.user.email)}</p>
       <button onClick={signOut} className="bg-blue-600 text-white border-blue-600">Sign Out</button>
     </div>
   )

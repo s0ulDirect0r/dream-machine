@@ -37,10 +37,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     await authClient.signOut()
   }
     return (
-      <div>
-        <h4>Sign In</h4>
+      <div className="flex flex-col justify-center mt-20 gap-8">
         <SignIn />
-        <h4>Sign Up</h4>
         <SignUp />
       </div>
     )

@@ -15,8 +15,8 @@ export default function Chat() {
 
   return (
     <div className='flex flex-col justify-center gap-8'>
-      <h1 className='text-white font-extrabold text-center mt-12 text-6xl'>CLEARCHAT</h1>
-      <div className="flex flex-col gap-4 rounded-lg p-8 h-[45rem] max-w-3xl py-24 mx-auto overflow-y-auto bg-yellow-500">
+      <h1 className='text-white font-[Faculty_Glyphic] font-extrabold text-center mt-12 text-6xl'>CLEARCHAT</h1>
+      <div className="flex flex-col font-[Faculty_Glyphic] gap-4 rounded-lg p-8 h-[45rem] w-[50rem] max-w-5xl py-24 mx-auto overflow-y-auto bg-yellow-500">
         <ScrollArea className='h-full'>
           {messages.map(message => (
           <div key={message.id} className="bg-yellow-500 font-bold text-white whitespace-pre-wrap">

@@ -38,6 +38,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   }
     return (
       <div className="flex flex-col justify-center mt-20 gap-8">
+        <h1 className='text-white font-[Faculty_Glyphic] font-extrabold my-9 text-center text-5xl md:text-6xl'>CLEARCHAT</h1>
         <SignIn />
         <SignUp />
       </div>

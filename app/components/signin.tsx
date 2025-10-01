@@ -15,7 +15,7 @@ export default function SignIn() {
     {
       onSuccess: (ctx) => {
         console.log("success!!: ", ctx.data)
-        navigator('/protected')
+        navigator('/chat')
       },
       onError: (ctx) => {
         console.log(ctx.error)

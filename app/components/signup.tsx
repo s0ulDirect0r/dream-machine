@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Form } from 'react-router'
+import { Form, useNavigate } from 'react-router'
 import { authClient } from '~/lib/auth-client'
 
 export default function SignUp() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const navigator = useNavigate()
 
   const signUp = async () => {
     await authClient.signUp.email({
@@ -19,6 +20,7 @@ export default function SignUp() {
       },
       onSuccess: (ctx) => {
         console.log("success!!")
+        navigator('/protected')
       },
       onError: (ctx) => {
         console.log(ctx.error)

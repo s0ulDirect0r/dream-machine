@@ -2,7 +2,7 @@ import { useChat } from '@ai-sdk/react'
 import { useState } from 'react'
 import type { Route } from './+types/chat'
 import { DefaultChatTransport } from 'ai'
-import { Form, redirect, useNavigate, type LoaderFunctionArgs } from 'react-router'
+import { Form, redirect, useNavigate, type ActionFunction, type ActionFunctionArgs, type LoaderFunctionArgs } from 'react-router'
 import { Button } from '~/components/ui/button'
 import { ScrollArea } from '~/components/ui/scroll-area'
 import { auth } from '~/lib/auth.server'
@@ -14,6 +14,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return { user: session.user }
   } else {
     throw redirect("/")
+  }
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const session = await auth.api.getSession({ headers: request.headers })
+  if (session?.user) {
+    return
+  } else {
+    throw Error("not a valid user session")
   }
 }
 

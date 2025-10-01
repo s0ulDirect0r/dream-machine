@@ -20,7 +20,7 @@ export default function SignUp() {
       },
       onSuccess: (ctx) => {
         console.log("success!!")
-        navigator('/protected')
+        navigator('/chat')
       },
       onError: (ctx) => {
         console.log(ctx.error)

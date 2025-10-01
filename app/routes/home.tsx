@@ -18,7 +18,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (session?.user) {
     console.log("redirecting!")
-    return redirect("/protected")
+    return redirect("/chat")
   } else {
     return
   }

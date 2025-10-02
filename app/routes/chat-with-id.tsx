@@ -8,12 +8,16 @@ import { ScrollArea } from '~/components/ui/scroll-area'
 import { auth } from '~/lib/auth.server'
 import { authClient } from '~/lib/auth-client'
 import axios from 'axios'
-import { createChat } from 'db/db'
+import { getChat } from 'db/db'
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (session?.user) {
-    return { user: session.user }
+    if(!params.id) {
+      throw new Error('no params bro')
+    }
+    const chatData = await getChat(params.id)
+    return { user: session.user, chatData }
   } else {
     throw redirect("/")
   }
@@ -21,25 +25,23 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
+  const body = await request.json()
+  const { chatId, message: messageData } = body
   if (session?.user) {
-    const newChat = await createChat(session.user.id)
-    console.log('new chat created')
-    console.log(newChat[0])
-    console.log(newChat[0].id)
-    return redirect(`/chat/${newChat[0].id}`)
+    
   } else {
     throw Error("not a valid user session")
   }
 }
 
 
-export default function Chat({ loaderData }: Route.ComponentProps) {
+export default function ChatWithId({ loaderData }: Route.ComponentProps) {
   const [input, setInput] = useState('')
   const { user } = loaderData
   const { messages, id, sendMessage } = useChat({ 
-    // onFinish: async (options) => {
-    //   await axios.post('/', { message: options.message, chatId: id })
-    // },
+    onFinish: async (options) => {
+      await axios.post('/', { message: options.message, chatId: id })
+    },
     transport: new DefaultChatTransport({
       api: '/api/ai'
     })
@@ -94,7 +96,7 @@ export default function Chat({ loaderData }: Route.ComponentProps) {
         </Form>
       </div>
       <Button onClick={signOut} className="bg-blue-600 max-w-md text-white self-center border-blue-600">Sign Out</Button>
-      <Form method="post" action="/chat">
+      <Form method="post" action="/api/chat">
           <Button className="bg-blue-600 max-w-md text-white self-center border-blue-600"
             type="submit">
               Create New Chat

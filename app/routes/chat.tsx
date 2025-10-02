@@ -7,16 +7,15 @@ import { Button } from '~/components/ui/button'
 import { ScrollArea } from '~/components/ui/scroll-area'
 import { auth } from '~/lib/auth.server'
 import { authClient } from '~/lib/auth-client'
-import { chat, message } from 'db/schema'
-import { db } from 'db/db'
-import { eq } from 'drizzle-orm'
 import axios from 'axios'
 
-const updateDatabase = () => {}
-
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (session?.user) {
+    // if(!params.id) {
+    //   throw redirect("/")
+    // }
+    // const chatData = await getChat(params.id)
     return { user: session.user }
   } else {
     throw redirect("/")
@@ -25,28 +24,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
-  console.log("i'm doing chat action stuff!!")
   const body = await request.json()
   const { chatId, message: messageData } = body
   if (session?.user) {
-    const chatExists = await db.select().from(chat).where(eq(chat.id, chatId))
-    console.log('chat exists: ', chatExists)
-     if(!chatExists[0]) {
-      const insertedChat = await db.insert(chat).values({
-        id: chatId,
-        userId: session.user.id
-      })
-      console.log(insertedChat)
-     }
-
-     const result = await db.insert(message).values({ 
-        id: crypto.randomUUID(),
-        chatId: chatId,
-        userId: session.user.id,
-        content: messageData.role === 'assistant' ? messageData.parts[1].text : messageData.parts[0].text,
-        role: messageData.role
-      }).returning() 
-
+    
   } else {
     throw Error("not a valid user session")
   }
@@ -55,11 +36,10 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Chat({ loaderData }: Route.ComponentProps) {
   const [input, setInput] = useState('')
+  const { user } = loaderData
   const { messages, id, sendMessage } = useChat({ 
     onFinish: async (options) => {
-      console.log(id)
-      console.log("heheheh it seems like i'm sending you stuff you need but i'm not??")
-      await axios.post('/chat', { message: options.message, chatId: id })
+      await axios.post('/', { message: options.message, chatId: id })
     },
     transport: new DefaultChatTransport({
       api: '/api/ai'
@@ -115,6 +95,12 @@ export default function Chat({ loaderData }: Route.ComponentProps) {
         </Form>
       </div>
       <Button onClick={signOut} className="bg-blue-600 max-w-md text-white self-center border-blue-600">Sign Out</Button>
+      <Form method="post" action="/api/chat">
+          <Button className="bg-blue-600 max-w-md text-white self-center border-blue-600"
+            type="submit">
+              Create New Chat
+          </Button>
+      </Form>
     </div>
     
   )

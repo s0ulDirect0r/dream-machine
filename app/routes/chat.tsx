@@ -8,7 +8,6 @@ import { ScrollArea } from '~/components/ui/scroll-area'
 import { auth } from '~/lib/auth.server'
 import { authClient } from '~/lib/auth-client'
 import axios from 'axios'
-import { getChat } from 'db/db'
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
@@ -16,8 +15,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     // if(!params.id) {
     //   throw redirect("/")
     // }
-    const chatData = await getChat(params.id)
-    return { user: session.user, chatData }
+    // const chatData = await getChat(params.id)
+    return { user: session.user }
   } else {
     throw redirect("/")
   }
@@ -37,9 +36,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Chat({ loaderData }: Route.ComponentProps) {
   const [input, setInput] = useState('')
-  const { chatData, user } = loaderData
+  const { user } = loaderData
   const { messages, id, sendMessage } = useChat({ 
-    id: chatData[0].id,
     onFinish: async (options) => {
       await axios.post('/', { message: options.message, chatId: id })
     },

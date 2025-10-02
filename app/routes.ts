@@ -6,6 +6,6 @@ export default [
   route("/api/ai/*", "routes/api.ai.$.ts"),
   route("/api/chat/*", "routes/api.chat.$.ts"),
   route("/protected", "routes/protected.tsx"),
-  route("/chat/:id", "routes/chat.tsx"),
+  route("/chat", "routes/chat.tsx"),
 ] satisfies RouteConfig;
 

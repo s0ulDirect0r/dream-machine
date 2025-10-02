@@ -28,6 +28,8 @@ export async function action({ request }: ActionFunctionArgs) {
     messages: convertToModelMessages(messages)
   })
 
+  console.log("hello i'm doing some streaming stuff!!")
+
   return result.toUIMessageStreamResponse()
 }
 

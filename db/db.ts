@@ -10,11 +10,11 @@ type Chat = {
   userId: string;
 }
 
-export const createChat = async (chatData: Chat) => {
+export const createChat = async (userId: string) => {
   // create a new chat in the table
   return await db.insert(chat).values({
     id: crypto.randomUUID(),
-    userId: chatData.userId
+    userId
   }).returning()
 
 }

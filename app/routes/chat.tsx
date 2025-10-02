@@ -16,7 +16,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     // if(!params.id) {
     //   throw redirect("/")
     // }
-
     const chatData = await getChat(params.id)
     return { user: session.user, chatData }
   } else {
@@ -98,7 +97,12 @@ export default function Chat({ loaderData }: Route.ComponentProps) {
         </Form>
       </div>
       <Button onClick={signOut} className="bg-blue-600 max-w-md text-white self-center border-blue-600">Sign Out</Button>
-      {/* <Button onClick={() => createChat} className="bg-blue-600 max-w-md text-white self-center border-blue-600">Create Chat</Button> */}
+      <Form method="post" action="/api/chat">
+          <Button className="bg-blue-600 max-w-md text-white self-center border-blue-600"
+            type="submit">
+              Create New Chat
+          </Button>
+      </Form>
     </div>
     
   )

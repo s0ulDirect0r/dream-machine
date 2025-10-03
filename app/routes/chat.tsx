@@ -23,9 +23,6 @@ export async function action({ request }: ActionFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (session?.user) {
     const newChat = await createChat(session.user.id)
-    console.log('new chat created')
-    console.log(newChat[0])
-    console.log(newChat[0].id)
     return redirect(`/chat/${newChat[0].id}`)
   } else {
     throw Error("not a valid user session")

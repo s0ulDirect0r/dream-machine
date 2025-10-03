@@ -5,9 +5,11 @@ import { eq } from "drizzle-orm";
 
 export const db = drizzle(postgres(process.env.DATABASE_URL!))
 
-type Chat = {
+export type Chat = {
   id: string;
   userId: string;
+  updatedAt: Date | undefined;
+  createdAt: Date | undefined;
 }
 
 export const createChat = async (userId: string) => {
@@ -32,4 +34,8 @@ export const deleteChat = async (chatId: string) => {
 export const getChat = async (chatId: string) => {
   // get a chat from the database
   return await db.select().from(chat).where(eq(chat.id, chatId))
+}
+
+export const getUserChats = async (userId: string) => {
+  return await db.select().from(chat).where(eq(chat.userId, userId))
 }

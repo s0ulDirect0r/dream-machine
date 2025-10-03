@@ -1,0 +1,7 @@
+POST http://localhost:5173/api/chat/
+Content-Type: application/json
+
+{
+  "id": "laoalwnaiow01491pa0",
+  "userId": "CfmpqcH4xYSeVJgJkd0RgMytOWZksKqy"
+}

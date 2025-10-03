@@ -10,7 +10,7 @@ import { authClient } from '~/lib/auth-client'
 import axios from 'axios'
 import { createChat } from 'db/db'
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (session?.user) {
     return { user: session.user }

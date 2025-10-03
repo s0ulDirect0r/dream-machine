@@ -11,14 +11,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
     if (session?.user) {
       const userChats = await getUserChats(session?.user.id)
       return { user: session.user, userChats }
+    } else {
+      throw Error("invalid session")
     }
-  return 
 }
 
 export default function ChatSidebarLayout({ loaderData }: Route.ComponentProps) {
   const { user, userChats } = loaderData
-  console.log(user)
-  console.log(userChats)
 
   return (
     <SidebarProvider>

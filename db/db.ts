@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from 'postgres'
 import { chat } from "./schema";
 import { eq } from "drizzle-orm";
+import type { UIMessage } from "ai";
 
 export const db = drizzle(postgres(process.env.DATABASE_URL!))
 
@@ -12,11 +13,22 @@ export type Chat = {
   createdAt: Date | undefined;
 }
 
-export const createChat = async (userId: string) => {
+export type Message = {
+  id: string;
+  userId: string;
+  chatId: string;
+  content: string;
+  role: string;
+  updatedAt: Date | undefined;
+  createdAt: Date | undefined;
+}
+
+export const createChat = async (userId: string, messages: UIMessage[]) => {
   // create a new chat in the table
   return await db.insert(chat).values({
     id: crypto.randomUUID(),
-    userId
+    userId,
+    messages: JSON.stringify(messages)
   }).returning()
 
 }

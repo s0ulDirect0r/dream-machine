@@ -1,6 +1,6 @@
 import { useChat } from '@ai-sdk/react'
 import { useState } from 'react'
-import type { Route } from './+types/chat'
+import type { Route } from './+types/chat-with-id'
 import { DefaultChatTransport } from 'ai'
 import { Form, redirect, useNavigate, type ActionFunction, type ActionFunctionArgs, type LoaderFunctionArgs } from 'react-router'
 import { Button } from '~/components/ui/button'
@@ -14,21 +14,21 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (session?.user) {
     if(!params.id) {
-      throw new Error('no params bro')
+      return redirect("/")
     }
     const chatData = await getChat(params.id)
-    return { user: session.user, chatData }
+    return { user: session.user, chatData: chatData[0] }
   } else {
-    throw redirect("/")
+    throw new Error("no valid session")
   }
 }
 
 export async function action({ request }: ActionFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
   const body = await request.json()
-  const { chatId, message: messageData } = body
+  const { chatId, message } = body
   if (session?.user) {
-    
+
   } else {
     throw Error("not a valid user session")
   }
@@ -37,13 +37,15 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ChatWithId({ loaderData }: Route.ComponentProps) {
   const [input, setInput] = useState('')
-  const { user } = loaderData
-  const { messages, id, sendMessage } = useChat({ 
+  const { user, chatData } = loaderData
+  const { messages, sendMessage } = useChat({ 
+    id: chatData.id,
     onFinish: async (options) => {
-      await axios.post('/', { message: options.message, chatId: id })
+      await axios.post(`/chat/${chatData.id}`, { message: options.message, chatId: chatData.id })
+      console.log('message posted!')
     },
     transport: new DefaultChatTransport({
-      api: '/api/ai'
+      api: '/api/ai',
     })
   })
 

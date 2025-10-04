@@ -37,9 +37,11 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ChatWithId({ loaderData }: Route.ComponentProps) {
   const [input, setInput] = useState('')
-  const { user, chatData } = loaderData
+  const { chatData } = loaderData
+  console.log('chatData: ', chatData)
   const { messages, sendMessage } = useChat({ 
     id: chatData.id,
+    messages: JSON.parse(chatData.messages),
     onFinish: async (options) => {
       await axios.post(`/chat/${chatData.id}`, { message: options.message, chatId: chatData.id })
       console.log('message posted!')

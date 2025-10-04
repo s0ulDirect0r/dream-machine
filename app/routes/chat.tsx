@@ -22,7 +22,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export async function action({ request }: ActionFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (session?.user) {
-    const newChat = await createChat(session.user.id)
+    const newChat = await createChat(session.user.id, [])
     return redirect(`/chat/${newChat[0].id}`)
   } else {
     throw Error("not a valid user session")

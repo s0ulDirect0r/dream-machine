@@ -11,8 +11,4 @@ export async function action({ request }: ActionFunctionArgs) {
     if (!session?.user) {
       throw Error("not a valid user session")
     }
-
-    if (request.method === 'POST') {
-      return await createChat(session.user.id, [])
-    }
 }

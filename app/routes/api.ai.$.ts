@@ -1,5 +1,6 @@
 import { openai } from '@ai-sdk/openai'
-import { streamText, type UIMessage, convertToModelMessages } from 'ai'
+import { streamText, type UIMessage, convertToModelMessages, validateUIMessages } from 'ai'
+import { getChat, updateChat } from 'db/db'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import { auth } from '~/lib/auth.server'
 
@@ -15,7 +16,10 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!session?.user) {
     throw Error("not a valid user session")
   }
-  const { messages }: { messages: UIMessage[] } = await request.json()
+
+  const { messages, id }: { messages: UIMessage[], id: string } = await request.json()
+  const retrievedChat = await getChat(id)
+  console.log('messages: ', messages)
   const result = streamText({
     model: openai('gpt-4o'),
     system: `You help users find conceptual clarity about engineering and math topics. ` + 
@@ -28,8 +32,17 @@ export async function action({ request }: ActionFunctionArgs) {
     messages: convertToModelMessages(messages)
   })
 
-  console.log("hello i'm doing some streaming stuff!!")
-
-  return result.toUIMessageStreamResponse()
+  return result.toUIMessageStreamResponse({
+    originalMessages: messages,
+    onFinish: (data) => {
+      const stringifiedMessages = JSON.stringify(messages)
+      console.log('stringifiedMessages: ', stringifiedMessages)
+      updateChat({ 
+        id, 
+        userId: session.user.id, 
+        messages: stringifiedMessages
+      })
+    }
+  })
 }
 

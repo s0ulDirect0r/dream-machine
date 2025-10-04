@@ -8,7 +8,7 @@ import { ScrollArea } from '~/components/ui/scroll-area'
 import { auth } from '~/lib/auth.server'
 import { authClient } from '~/lib/auth-client'
 import axios from 'axios'
-import { getChat } from 'db/db'
+import { createChat, getChat } from 'db/db'
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
@@ -25,10 +25,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const session = await auth.api.getSession({ headers: request.headers })
-  const body = await request.json()
-  const { chatId, message } = body
   if (session?.user) {
-
+    if (request.method === 'POST') {
+      const newChat = await createChat(session.user.id, [])
+      console.log(newChat)
+      return redirect(`/chat/${newChat[0].id}`)
+    }
   } else {
     throw Error("not a valid user session")
   }
@@ -37,13 +39,11 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ChatWithId({ loaderData }: Route.ComponentProps) {
   const [input, setInput] = useState('')
-  const { user, chatData } = loaderData
+  const { chatData } = loaderData
+  console.log('chatData: ', chatData)
   const { messages, sendMessage } = useChat({ 
     id: chatData.id,
-    onFinish: async (options) => {
-      await axios.post(`/chat/${chatData.id}`, { message: options.message, chatId: chatData.id })
-      console.log('message posted!')
-    },
+    messages: JSON.parse(chatData.messages),
     transport: new DefaultChatTransport({
       api: '/api/ai',
     })
@@ -98,7 +98,7 @@ export default function ChatWithId({ loaderData }: Route.ComponentProps) {
         </Form>
       </div>
       <Button onClick={signOut} className="bg-blue-600 max-w-md text-white self-center border-blue-600">Sign Out</Button>
-      <Form method="post" action="/api/chat">
+      <Form method="post" action={`/chat/${chatData.id}`}>
           <Button className="bg-blue-600 max-w-md text-white self-center border-blue-600"
             type="submit">
               Create New Chat

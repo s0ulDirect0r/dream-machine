@@ -9,6 +9,7 @@ export const db = drizzle(postgres(process.env.DATABASE_URL!))
 export type Chat = {
   id: string;
   userId: string;
+  messages: string;
   updatedAt: Date | undefined;
   createdAt: Date | undefined;
 }
@@ -33,7 +34,7 @@ export const createChat = async (userId: string, messages: UIMessage[]) => {
 
 }
 
-export const updateChat = async (chatData: Chat) => {
+export const updateChat = async (chatData: { id: string, userId: string, messages: string }) => {
   // update a chat on the database
   return await db.update(chat).set(chatData).where(eq(chat.id, chatData.id))
 }
